@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/drawer_top">
+        <item
+            android:id="@+id/nav_routes"
+            android:icon="@drawable/ic_directions_walk_black_24dp"
+            android:title="Find Routes" />
+        <item
+            android:id="@+id/nav_destinations"
+            android:icon="@drawable/ic_location_on_black_24dp"
+            android:title="Destinations" />
+    </group>
+
+    <group android:checkableBehavior="single"
+        android:id="@+id/drawer_bottom">
+        <item
+            android:id="@+id/nav_account"
+            android:icon="@drawable/ic_person_black_24dp"
+            android:title="Account" />
+        <item
+            android:id="@+id/nav_help_and_about"
+            android:icon="@drawable/ic_help_black_24dp"
+            android:title="Help and about" />
+    </group>
+
+</menu>

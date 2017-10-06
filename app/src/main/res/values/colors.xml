@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#4B5D78</color>
+    <color name="colorPrimaryDark">#3E4D63</color>
+    <color name="colorAccent">#85FFC7</color>
+
+    <color name="white">#ffffff</color>
+    <color name="btn_logout_bg">#ff6861</color>
+</resources>
