@@ -3,21 +3,26 @@ package com.mobileapps.walkbuddy;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -116,10 +121,12 @@ public class MainActivity extends AppCompatActivity
         Class fragmentClass = null;
         if (id == R.id.nav_routes) {
             fragmentClass = FindRoutesFragment.class;
+            getSupportActionBar().setTitle("WalkBuddy");
         } else if (id == R.id.nav_destinations) {
 
         } else if (id == R.id.nav_account) {
             fragmentClass = AccountFragment.class;
+            getSupportActionBar().setTitle("Account");
         } else if (id == R.id.nav_help_and_about) {
 
         }
@@ -168,6 +175,24 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSignOut() {
         signOut();
+    }
+
+    @Override
+    public void onDeleteAccount() {
+        FirebaseUser user = mAuth.getCurrentUser();
+        if(user != null) {
+            user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    if (task.isSuccessful()) {
+                        Toast.makeText(MainActivity.this, "Your profile has been deleted", Toast.LENGTH_SHORT).show();
+                        signOut();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Failed to delete your account", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 
     @Override

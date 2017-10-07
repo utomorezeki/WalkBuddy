@@ -1,9 +1,12 @@
 package com.mobileapps.walkbuddy;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,13 +72,44 @@ public class AccountFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_account, container, false);
+
         Button btnSignOut = mFrameLayout.findViewById(R.id.sign_out);
+        Button btnDeleteAccount = mFrameLayout.findViewById(R.id.delete_account);
+
         btnSignOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 mListener.onSignOut();
             }
         });
+
+        btnDeleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+                alertDialogBuilder.setTitle("Delete Account");
+
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to delete your account?")
+                        .setCancelable(false)
+                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        mListener.onDeleteAccount();
+                    }
+                }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
+        });
+
         return mFrameLayout;
     }
 
@@ -116,5 +150,6 @@ public class AccountFragment extends Fragment {
     public interface OnAccountFragmentInteractionListener {
         // TODO: Update argument type and name
         void onSignOut();
+        void onDeleteAccount();
     }
 }
