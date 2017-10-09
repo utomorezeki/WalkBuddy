@@ -12,6 +12,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity
     private FirebaseAuth mAuth;
 
     private NavigationView mNavigationView;
+
+    private User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +79,30 @@ public class MainActivity extends AppCompatActivity
 
         mNavigationView = findViewById(R.id.nav_view);
         mNavigationView.setNavigationItemSelectedListener(this);
-        setNavDrawerInfoBasedOnUser();
 
+        // Update navbar info and add ValueEventListener to user to stay updated with current
+        // database values.
+        if(mAuth.getCurrentUser() != null) {
+            mDatabase.child("users").child(mAuth.getUid()).addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            user = dataSnapshot.getValue(User.class);
+
+                            View header = mNavigationView.getHeaderView(0);
+                            TextView name = header.findViewById(R.id.navName);
+                            TextView email = header.findViewById(R.id.navEmail);
+                            name.setText(user.getName());
+                            email.setText(user.getEmail());
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(TAG, databaseError.toString());
+                        }
+                    }
+            );
+        }
     }
 
     @Override
@@ -144,42 +169,30 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void setNavDrawerInfoBasedOnUser() {
-        mDatabase.child("users").child(mAuth.getUid()).addListenerForSingleValueEvent(
-                new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot dataSnapshot) {
-                        User user = dataSnapshot.getValue(User.class);
-
-                        View header = mNavigationView.getHeaderView(0);
-                        TextView name = header.findViewById(R.id.navName);
-                        TextView email = header.findViewById(R.id.navEmail);
-                        name.setText(user.getName());
-                        email.setText(user.getEmail());
-                    }
-
-                    @Override
-                    public void onCancelled(DatabaseError databaseError) {
-
-                    }
-                }
-        );
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     private void signOut() {
         mAuth.signOut();
         startActivity(new Intent(MainActivity.this, LoginActivity.class));
         finish();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onSignOut() {
         signOut();
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onDeleteAccount() {
         FirebaseUser user = mAuth.getCurrentUser();
+
         if(user != null) {
             user.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
@@ -195,9 +208,69 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onEditAccount(final String newName, final String newEmail, String newPassword) {
+        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
 
+        if (firebaseUser != null) {
+            final DatabaseReference userReference = mDatabase.child("users").child(mAuth.getUid());
+
+            if (!TextUtils.isEmpty(newEmail)) {
+                firebaseUser.updateEmail(newEmail)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, "Failed to update email", Toast.LENGTH_LONG).show();
+                                    Log.e(TAG, "Error updating email");
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Email updated", Toast.LENGTH_LONG).show();
+
+                                    User updatedUser = new User(user.getName(), newEmail);
+                                    try {
+                                        userReference.setValue(updatedUser);
+                                    } catch (Exception e) {
+                                        Log.e(TAG, e.toString());
+                                    }
+                                }
+                            }
+                        });
+            }
+
+            if (!TextUtils.isEmpty(newPassword)) {
+                firebaseUser.updatePassword(newPassword)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (!task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, "Failed to update password", Toast.LENGTH_SHORT).show();
+                                    Log.e(TAG, "Error updating password");
+                                } else {
+                                    Toast.makeText(MainActivity.this, "Password updated", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+
+            if (!TextUtils.isEmpty(newName)) {
+                User updatedUser = new User(newName, user.getEmail());
+                try {
+                    userReference.setValue(updatedUser);
+                    Toast.makeText(MainActivity.this, "Name updated", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Log.e(TAG, e.toString());
+                    Toast.makeText(MainActivity.this, "Error updating name", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+        }
+
+        // Restart activity
+        startActivity(new Intent(MainActivity.this, MainActivity.class));
+        finish();
     }
 
     @Override
@@ -234,5 +307,10 @@ public class MainActivity extends AppCompatActivity
     protected void onRestart() {
         super.onRestart();
         Log.i(TAG, "onRestart called");
+    }
+
+    @Override
+    public void onFragmentInteraction(Uri uri) {
+        Log.i(TAG, "onFragmentInteraction");
     }
 }
