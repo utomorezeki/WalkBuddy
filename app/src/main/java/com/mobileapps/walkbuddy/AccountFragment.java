@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ import org.w3c.dom.Text;
  * create an instance of this fragment.
  */
 public class AccountFragment extends Fragment {
+    private static final String TAG = "AccountFragment";
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -68,6 +71,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i(TAG, "onCreate called");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
@@ -77,6 +81,7 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.i(TAG, "onCreateView called");
         // Inflate the layout for this fragment
         final FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_account, container, false);
 
@@ -179,6 +184,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        Log.i(TAG, "onAttach called");
         if (context instanceof OnAccountFragmentInteractionListener) {
             mListener = (OnAccountFragmentInteractionListener) context;
         } else {
@@ -190,6 +196,7 @@ public class AccountFragment extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
+        Log.i(TAG, "onDetach called");
         mListener = null;
     }
 
