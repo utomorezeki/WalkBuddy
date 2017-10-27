@@ -33,8 +33,8 @@ import com.mobileapps.walkbuddy.models.User;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFragmentInteractionListener,
-        AccountFragment.OnAccountFragmentInteractionListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener,
+        AccountFragment.OnAccountFragmentInteractionListener, DestinationsFragment.OnDestinationsFragmentInteractionListener, HelpAboutFragment.OnHelpAboutFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
     private DatabaseReference mDatabase;
@@ -148,12 +148,14 @@ public class MainActivity extends AppCompatActivity
             fragmentClass = FindRoutesFragment.class;
             getSupportActionBar().setTitle("WalkBuddy");
         } else if (id == R.id.nav_destinations) {
-
+            fragmentClass = DestinationsFragment.class;
+            getSupportActionBar().setTitle("Destinations");
         } else if (id == R.id.nav_account) {
             fragmentClass = AccountFragment.class;
             getSupportActionBar().setTitle("Account");
         } else if (id == R.id.nav_help_and_about) {
-
+            fragmentClass = HelpAboutFragment.class;
+            getSupportActionBar().setTitle("Help and About");
         }
 
         try {
@@ -310,7 +312,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
-        Log.i(TAG, "onFragmentInteraction");
+    public void onFindRoutesFragmentInteraction(Uri uri) {
+        Log.i(TAG, "onFindRoutesFragmentInteraction");
+    }
+
+    @Override
+    public void onHelpAboutFragmentInteraction(Uri uri) {
+        Log.i(TAG, "onHelpAboutFragmentInteraction");
+    }
+
+    @Override
+    public void onDestinationsFragmentInteraction(Uri uri) {
+        Log.i(TAG, "onDestinationsFragmentInteraction");
     }
 }
