@@ -10,5 +10,12 @@
         android:id="@id/map"
         />
 
+    <Button
+        android:id="@+id/startRec"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorAccent"
+        android:text="Start Recording" />
+
 
 </FrameLayout>

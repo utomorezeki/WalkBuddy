@@ -1,6 +1,7 @@
 package com.mobileapps.walkbuddy;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
@@ -11,12 +12,18 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 
@@ -27,6 +34,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
     View mView;
     private final static int MY_PERMISSION_FINE_LOCATION = 101;
 
+    CharSequence name;
+    double lat;
+    double lng;
+    Button record;
 
     public MapFragment() {
         // Required empty public constructor
@@ -55,6 +66,21 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
+        Bundle bundle = this.getArguments();
+        if (bundle != null) {
+            name = bundle.getCharSequence("name", "");
+            lat = bundle.getDouble("lat", 0);
+            lng = bundle.getDouble("long", 0);
+        }
+
+        record = (Button) view.findViewById(R.id.startRec);
+        record.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //Intent intent = new Intent(getActivity(), RecordActivity.class);
+                //startActivity(intent);
+            }
+        });
     }
 
     public void onMapReady(GoogleMap googleMap) {
@@ -70,6 +96,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
                 requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_FINE_LOCATION);
             }
         }
+        mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(lat,lng)).title(name.toString()));
+        CameraPosition dest = CameraPosition.builder().target(new LatLng(lat,lng)).zoom(16).build();
+        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(dest));
    }
 
     @Override
