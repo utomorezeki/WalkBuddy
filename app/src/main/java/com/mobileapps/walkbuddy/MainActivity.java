@@ -145,7 +145,7 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         Class fragmentClass = null;
         if (id == R.id.nav_routes) {
-            fragmentClass = MapFragment.class;
+            fragmentClass = FindRoutesFragment.class;
             getSupportActionBar().setTitle("WalkBuddy");
         } else if (id == R.id.nav_destinations) {
             fragmentClass = MapFragment.class;

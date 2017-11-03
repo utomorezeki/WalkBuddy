@@ -2,63 +2,51 @@ package com.mobileapps.walkbuddy;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlacePicker;
+
+import com.google.android.gms.maps.model.LatLng;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFindRoutesFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link FindRoutesFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class FindRoutesFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import org.w3c.dom.Text;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class FindRoutesFragment extends Fragment {
+
 
     private OnFindRoutesFragmentInteractionListener mListener;
+    Button findPlaceBut;
+    LatLng placeLoc;
+    CharSequence placeName;
+    TextView testName;
+    TextView testLoc;
+
+    private final static int MY_PERMISSION_FINE_LOCATION = 101;
+    private final static int PLACE_PICKER_REQUEST = 1;
 
     public FindRoutesFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment FindRoutesFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static FindRoutesFragment newInstance(String param1, String param2) {
-        FindRoutesFragment fragment = new FindRoutesFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -66,6 +54,30 @@ public class FindRoutesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_find_routes, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        findPlaceBut =  (Button) view.findViewById(R.id.pickPlace);
+        testName = (TextView) view.findViewById(R.id.testName);
+        testName = (TextView) view.findViewById(R.id.testLoc);
+        findPlaceBut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+                try {
+                    Intent intent = builder.build(getActivity());
+                    startActivityForResult(intent, PLACE_PICKER_REQUEST);
+                } catch (GooglePlayServicesRepairableException e) {
+                    e.printStackTrace();
+                } catch (GooglePlayServicesNotAvailableException e) {
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -105,5 +117,41 @@ public class FindRoutesFragment extends Fragment {
     public interface OnFindRoutesFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFindRoutesFragmentInteraction(Uri uri);
+    }
+
+    private void requestPermission() {
+        if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_FINE_LOCATION);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        switch (requestCode) {
+            case MY_PERMISSION_FINE_LOCATION:
+                if (grantResults[0] != PackageManager.PERMISSION_GRANTED) {
+                    Toast.makeText(getContext(), "This app requires location permissions to be granted", Toast.LENGTH_LONG).show();
+                    getActivity().finish();
+                }
+                break;
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == PLACE_PICKER_REQUEST){
+            if (resultCode == getActivity().RESULT_OK){
+                Place place = PlacePicker.getPlace(getActivity(), data);
+                placeName = place.getName();
+                placeLoc = place.getLatLng();
+                testName.append(placeName);
+
+            }
+        }
     }
 }

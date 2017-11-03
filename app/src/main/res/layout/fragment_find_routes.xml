@@ -17,13 +17,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Search for Destination:"/>
-        <SearchView
-            android:id="@+id/destination_search"
+        <Button
+            android:id="@+id/pickPlace"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorAccent"
-            android:iconifiedByDefault="false"
-            android:queryHint="@string/destination_name" />
+            android:text="Search a Place" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,6 +35,16 @@
             android:layout_height="wrap_content">
 
         </ScrollView>
+
+        <TextView
+            android:id="@+id/testName"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"/>
+
+        <TextView
+            android:id="@+id/testLoc"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"/>
     </LinearLayout>
 
 </FrameLayout>
