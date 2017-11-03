@@ -7,16 +7,21 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,11 +34,18 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mobileapps.walkbuddy.models.Destination;
+import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.models.User;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener,
+        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener, RoutesFragment.OnFragmentInteractionListener,
         AccountFragment.OnAccountFragmentInteractionListener, DestinationsFragment.OnDestinationsFragmentInteractionListener, HelpAboutFragment.OnHelpAboutFragmentInteractionListener{
 
     private static final String TAG = "MainActivity";
@@ -43,6 +55,8 @@ public class MainActivity extends AppCompatActivity
     private NavigationView mNavigationView;
 
     private User user;
+    public List<Destination> destinations = new ArrayList<>();
+    private FirebaseUser firebaseUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +84,7 @@ public class MainActivity extends AppCompatActivity
         mAuth = FirebaseAuth.getInstance();
         // Get Database instance
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseUser = mAuth.getCurrentUser();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -94,6 +109,26 @@ public class MainActivity extends AppCompatActivity
                             TextView email = header.findViewById(R.id.navEmail);
                             name.setText(user.getName());
                             email.setText(user.getEmail());
+                        }
+
+                        @Override
+                        public void onCancelled(DatabaseError databaseError) {
+                            Log.e(TAG, databaseError.toString());
+                        }
+                    }
+            );
+
+            // Destinations
+            mDatabase.child("users").child(mAuth.getUid()).child("destinations").addValueEventListener(
+                    new ValueEventListener() {
+                        @Override
+                        public void onDataChange(DataSnapshot dataSnapshot) {
+                            if (dataSnapshot.exists()) {
+                                Iterable<DataSnapshot> it = dataSnapshot.getChildren();
+                                for(DataSnapshot snap : it) {
+                                    destinations.add(snap.getValue(Destination.class));
+                                }
+                            }
                         }
 
                         @Override
@@ -146,16 +181,12 @@ public class MainActivity extends AppCompatActivity
         Class fragmentClass = null;
         if (id == R.id.nav_routes) {
             fragmentClass = FindRoutesFragment.class;
-            getSupportActionBar().setTitle("WalkBuddy");
         } else if (id == R.id.nav_destinations) {
-            fragmentClass = MapFragment.class;
-            getSupportActionBar().setTitle("Destinations");
+            fragmentClass = DestinationsFragment.class;
         } else if (id == R.id.nav_account) {
             fragmentClass = AccountFragment.class;
-            getSupportActionBar().setTitle("Account");
         } else if (id == R.id.nav_help_and_about) {
             fragmentClass = HelpAboutFragment.class;
-            getSupportActionBar().setTitle("Help and About");
         }
 
         try {
@@ -164,6 +195,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -215,8 +247,6 @@ public class MainActivity extends AppCompatActivity
      */
     @Override
     public void onEditAccount(final String newName, final String newEmail, String newPassword) {
-        final FirebaseUser firebaseUser = mAuth.getCurrentUser();
-
         if (firebaseUser != null) {
             final DatabaseReference userReference = mDatabase.child("users").child(mAuth.getUid());
 
@@ -312,7 +342,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFindRoutesFragmentInteraction(Uri uri) {
+    public void onFindRoutesFragmentInteraction() {
         Log.i(TAG, "onFindRoutesFragmentInteraction");
     }
 
@@ -322,7 +352,30 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDestinationsFragmentInteraction(Uri uri) {
-        Log.i(TAG, "onDestinationsFragmentInteraction");
+    public void onRoutesFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void deleteDestination(String destinationName) {
+        if (firebaseUser != null) {
+            final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
+            destinationReference.child(destinationName).removeValue();
+        }
+
+        // Refresh list
+        Fragment fragment = null;
+        try {
+            fragment = DestinationsFragment.class.newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction ft = fragmentManager.beginTransaction();
+        ft.detach(fragment);
+        ft.attach(fragment);
+        ft.replace(R.id.mainContent, fragment).commit();
     }
 }

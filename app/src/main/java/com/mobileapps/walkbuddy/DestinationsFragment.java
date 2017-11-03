@@ -1,78 +1,108 @@
 package com.mobileapps.walkbuddy;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 
+import com.google.android.gms.vision.Frame;
+import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnDestinationsFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link DestinationsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class DestinationsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+import java.util.ArrayList;
+import java.util.List;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+public class DestinationsFragment extends Fragment {
 
     private OnDestinationsFragmentInteractionListener mListener;
+    private ListView mListView;
+    private List<Destination> destinations = new ArrayList<>();
+    DestinationAdapter adapter;
 
     public DestinationsFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment DestinationsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static DestinationsFragment newInstance(String param1, String param2) {
-        DestinationsFragment fragment = new DestinationsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+        destinations = ((MainActivity)getActivity()).destinations;
+        adapter = new DestinationAdapter(getActivity(), destinations);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_destinations, container, false);
-    }
+        FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_destinations, container, false);
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onDestinationsFragmentInteraction(uri);
-        }
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Destinations");
+
+        mListView = mFrameLayout.findViewById(R.id.destination_list);
+
+        mListView.setLongClickable(true);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Destination selectedDestination = destinations.get(position);
+                Fragment fragment = null;
+                try {
+                    fragment = RoutesFragment.newInstance(selectedDestination.getDestinationName(), position);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).addToBackStack(null).commit();
+            }
+        });
+
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(final AdapterView<?> adapterView, View view, int position, long id) {
+                final int selectedPosition = position;
+                final Destination selectedDestination = destinations.get(selectedPosition);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+                alertDialogBuilder.setTitle("Delete Destination");
+
+                alertDialogBuilder
+                        .setMessage("Are you sure you want to delete " + selectedDestination.getDestinationName() + " and all associated routes?")
+                        .setCancelable(false)
+                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                mListener.deleteDestination(selectedDestination.getDestinationName());
+                                destinations = ((MainActivity)getActivity()).destinations;
+                                adapter.setList(destinations);
+                            }
+                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.cancel();
+                    }
+                });
+
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+                return true;
+            }
+        });
+        mListView.setAdapter(adapter);
+
+        return mFrameLayout;
     }
 
     @Override
@@ -103,7 +133,6 @@ public class DestinationsFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDestinationsFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onDestinationsFragmentInteraction(Uri uri);
+        void deleteDestination(String destinationName);
     }
 }

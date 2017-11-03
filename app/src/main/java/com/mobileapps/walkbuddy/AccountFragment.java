@@ -85,6 +85,8 @@ public class AccountFragment extends Fragment {
         // Inflate the layout for this fragment
         final FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_account, container, false);
 
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Account");
+
         Button btnSignOut = mFrameLayout.findViewById(R.id.sign_out);
         Button btnDeleteAccount = mFrameLayout.findViewById(R.id.delete_account);
         Button btnSaveChanges = mFrameLayout.findViewById(R.id.save_changes);

@@ -30,12 +30,6 @@
             android:layout_marginTop="@dimen/activity_vertical_margin"
             android:text="Quick Routes:" />
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-        </ScrollView>
-
         <TextView
             android:id="@+id/testName"
             android:layout_width="match_parent"

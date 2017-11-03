@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +26,6 @@ import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.model.LatLng;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
-import org.w3c.dom.Text;
 
 public class FindRoutesFragment extends Fragment {
 
@@ -53,7 +53,9 @@ public class FindRoutesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_find_routes, container, false);
+        final FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_find_routes, container, false);
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle("WalkBuddy");
+        return mFrameLayout;
     }
 
     @Override
@@ -78,13 +80,6 @@ public class FindRoutesFragment extends Fragment {
 
             }
         });
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFindRoutesFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -116,7 +111,7 @@ public class FindRoutesFragment extends Fragment {
      */
     public interface OnFindRoutesFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFindRoutesFragmentInteraction(Uri uri);
+        void onFindRoutesFragmentInteraction();
     }
 
     private void requestPermission() {

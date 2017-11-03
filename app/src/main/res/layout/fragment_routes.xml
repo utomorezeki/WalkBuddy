@@ -5,7 +5,7 @@
     tools:context="com.mobileapps.walkbuddy.DestinationsFragment">
 
     <ListView
-        android:id="@+id/destination_list"
+        android:id="@+id/route_list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
 

@@ -4,33 +4,45 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.FrameLayout;
+import android.widget.ListView;
 
+import com.mobileapps.walkbuddy.models.Destination;
+import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link OnHelpAboutFragmentInteractionListener} interface
+ * {@link RoutesFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link HelpAboutFragment#newInstance} factory method to
+ * Use the {@link RoutesFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class HelpAboutFragment extends Fragment {
+public class RoutesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private static final String ARG_DESTINATION_NAME = "destinationName";
+    private static final String ARG_DESTINATION_POSITION = "position";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    private String destinationName;
+    private int destinationPosition;
+    private List<Route> routes = new ArrayList<>();
 
-    private OnHelpAboutFragmentInteractionListener mListener;
+    private ListView mListView;
 
-    public HelpAboutFragment() {
+    private OnFragmentInteractionListener mListener;
+
+    public RoutesFragment() {
         // Required empty public constructor
     }
 
@@ -38,16 +50,15 @@ public class HelpAboutFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HelpAboutFragment.
+     * @param destinationName Parameter 1.
+     * @return A new instance of fragment RoutesFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static HelpAboutFragment newInstance(String param1, String param2) {
-        HelpAboutFragment fragment = new HelpAboutFragment();
+    public static RoutesFragment newInstance(String destinationName, int position) {
+        RoutesFragment fragment = new RoutesFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putString(ARG_DESTINATION_NAME, destinationName);
+        args.putInt(ARG_DESTINATION_POSITION, position);
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +67,10 @@ public class HelpAboutFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+            destinationName = getArguments().getString(ARG_DESTINATION_NAME);
+            destinationPosition = getArguments().getInt(ARG_DESTINATION_POSITION);
+            Destination destination = ((MainActivity)getActivity()).destinations.get(destinationPosition);
+            routes = destination.getRoutes();
         }
     }
 
@@ -65,25 +78,32 @@ public class HelpAboutFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Help and About");
-        return inflater.inflate(R.layout.fragment_help_about, container, false);
+        FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_routes, container, false);
+
+        ((MainActivity)getActivity()).getSupportActionBar().setTitle(destinationName);
+        mListView = mFrameLayout.findViewById(R.id.route_list);
+
+        RouteAdapter adapter = new RouteAdapter(getActivity(), routes);
+        mListView.setAdapter(adapter);
+
+        return mFrameLayout;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onHelpAboutFragmentInteraction(uri);
+            mListener.onRoutesFragmentInteraction(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnHelpAboutFragmentInteractionListener) {
-            mListener = (OnHelpAboutFragmentInteractionListener) context;
+        if (context instanceof OnFragmentInteractionListener) {
+            mListener = (OnFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFindRoutesFragmentInteractionListener");
+                    + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -103,8 +123,8 @@ public class HelpAboutFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnHelpAboutFragmentInteractionListener {
+    public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onHelpAboutFragmentInteraction(Uri uri);
+        void onRoutesFragmentInteraction(Uri uri);
     }
 }
