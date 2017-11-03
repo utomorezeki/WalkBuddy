@@ -37,6 +37,8 @@
     <string name="btn_save_changes">Save Changes</string>
     <string name="forgot_password_msg">We just need your registered email to send you password reset instructions.</string>
     <string name="delete_account">Delete account</string>
+    <string name="destination_name">Destination name</string>
+    <string name="btn_find_routes">Find Routes</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
