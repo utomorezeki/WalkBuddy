@@ -77,8 +77,13 @@ public class MapFragment extends Fragment implements OnMapReadyCallback {
         record.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //Intent intent = new Intent(getActivity(), RecordActivity.class);
-                //startActivity(intent);
+                Intent intent = new Intent(getActivity(), RecordActivity.class);
+                Bundle extra = new Bundle();
+                extra.putCharSequence("name", name);
+                extra.putDouble("lat",lat);
+                extra.putDouble("long",lng);
+                intent.putExtra("data",extra);
+                startActivity(intent);
             }
         });
     }
