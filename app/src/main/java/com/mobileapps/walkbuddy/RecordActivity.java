@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +27,7 @@ import com.mobileapps.walkbuddy.walkbuddy.R;
 import org.w3c.dom.Text;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 
 public class RecordActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener {
@@ -43,8 +46,23 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
     LocationRequest mLocationRequest;
 
     Button stopButton;
-    TextView TEST1;
-    TextView TEST2;
+    TextView timerText;
+    Handler customHandler = new Handler();
+    long startTime = 0, timeInMillis = 0;
+
+    Runnable updateTimerThread = new Runnable() {
+        @Override
+        public void run() {
+            timeInMillis = SystemClock.uptimeMillis() - startTime;
+            int secs = (int) timeInMillis/1000;
+            int mins = secs/60;
+            secs %= 60;
+            String timer = String.format(Locale.getDefault(), "%02d", mins) + ":" + String.format(Locale.getDefault(), "%02d",secs);
+            timerText.setText(timer);
+            customHandler.postDelayed(this, 0);
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,9 +73,11 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
         lat = extra.getDouble("lat",0);
         lng = extra.getDouble("long",0);
 
+        // Timer
+        timerText = findViewById(R.id.timerValue);
 
-        TEST1 = (TextView) findViewById(R.id.TEST1);
-        TEST2 = (TextView) findViewById(R.id.TEST2);
+        startTime = SystemClock.uptimeMillis();
+        customHandler.postDelayed(updateTimerThread, 0);
 
         if (mGoogleApiClient == null) {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -83,9 +103,6 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
             public void onLocationChanged(Location location) {
                 verticesLat.add(location.getLatitude());
                 verticesLng.add(location.getLongitude());
-                TEST1.setText("LATITUDE: " + location.getLatitude());
-                TEST2.setText("LONGITUDE: " + location.getLongitude());
-
             }
 
         };
@@ -93,6 +110,7 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                customHandler.removeCallbacks(updateTimerThread);
                 Intent intent = new Intent(RecordActivity.this, MainActivity.class);
                 Bundle extra = new Bundle();
                 extra.putCharSequence("name",name);
@@ -100,12 +118,14 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
                 extra.putSerializable("userLng",verticesLng);
                 extra.putDouble("destLat",lat);
                 extra.putDouble("destLng",lng);
+                extra.putLong("timeInMillis", timeInMillis);
                 intent.putExtra("data",extra);
                 startActivity(intent);
                 finish();
             }
         });
     }
+
     @Override
     public void onConnected(Bundle connectionHint) {
 

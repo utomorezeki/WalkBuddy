@@ -35,6 +35,7 @@ public class SaveRouteFragment extends Fragment {
     private static final String ARG_USER_LNG = "user_lng";
     private static final String ARG_DEST_LAT = "dest_lat";
     private static final String ARG_DEST_LNG = "dest_lng";
+    private static final String ARG_TIME = "timeInMillis";
 
     // TODO: Rename and change types of parameters
     private String destinationName;
@@ -42,6 +43,7 @@ public class SaveRouteFragment extends Fragment {
     private List<Double> userLng;
     private double destLat;
     private double destLng;
+    private long timeInMillis;
 
     private EditText editDestinationNameText, editStartLocationText;
 
@@ -58,7 +60,7 @@ public class SaveRouteFragment extends Fragment {
      * @return A new instance of fragment SaveRouteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SaveRouteFragment newInstance(CharSequence destinationName, ArrayList<Double> userLat, ArrayList<Double> userLng, double destLat, double destLng) {
+    public static SaveRouteFragment newInstance(CharSequence destinationName, ArrayList<Double> userLat, ArrayList<Double> userLng, double destLat, double destLng, long timeInMillis) {
         SaveRouteFragment fragment = new SaveRouteFragment();
         Bundle args = new Bundle();
         args.putCharSequence(ARG_DESTINATION_NAME, destinationName);
@@ -66,6 +68,7 @@ public class SaveRouteFragment extends Fragment {
         args.putSerializable(ARG_USER_LNG, userLng);
         args.putDouble(ARG_DEST_LAT, destLat);
         args.putDouble(ARG_DEST_LNG, destLng);
+        args.putLong(ARG_TIME, timeInMillis);
         fragment.setArguments(args);
         return fragment;
     }
@@ -79,6 +82,7 @@ public class SaveRouteFragment extends Fragment {
             userLng = (List<Double>) getArguments().getSerializable(ARG_USER_LNG);
             destLat = getArguments().getDouble(ARG_DEST_LAT);
             destLng = getArguments().getDouble(ARG_DEST_LNG);
+            timeInMillis = getArguments().getLong(ARG_TIME);
         }
     }
 
@@ -122,7 +126,7 @@ public class SaveRouteFragment extends Fragment {
                     }
                 }
 
-                mListener.saveRoute(destinationInput, startLocationInput, userLat, userLng);
+                mListener.saveRoute(destinationInput, startLocationInput, userLat, userLng, timeInMillis);
             }
         });
 
@@ -159,6 +163,6 @@ public class SaveRouteFragment extends Fragment {
     public interface OnSaveRouteFragmentInteractionListener {
         // TODO: Update argument type and name
         void cancelSaveRoute();
-        void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng);
+        void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng, long timeInMillis);
     }
 }

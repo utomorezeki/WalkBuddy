@@ -78,9 +78,10 @@ public class MainActivity extends AppCompatActivity
             ArrayList<Double> userLng = (ArrayList<Double>) extras.getSerializable("userLng");
             double destLat = extras.getDouble("destLat");
             double destLng = extras.getDouble("destLng");
+            long timeInMillis = extras.getLong("timeInMillis");
 
             if (savedInstanceState == null) {
-                Fragment fragment = SaveRouteFragment.newInstance(destinationName, userLat, userLng, destLat, destLng);
+                Fragment fragment = SaveRouteFragment.newInstance(destinationName, userLat, userLng, destLat, destLng, timeInMillis);
                 FragmentManager fragmentManager = getSupportFragmentManager();
                 fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
             }
@@ -174,8 +175,9 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+        //getMenuInflater().inflate(R.menu.main, menu);
+        //return true;
+        return false;
     }
 
     @Override
@@ -396,9 +398,9 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng) {
+    public void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng, long timeInMillis) {
         List<Route> routes = null;
-        Route newRoute = new Route(destinationName, startLocationName, 1000, userLat, userLng);
+        Route newRoute = new Route(destinationName, startLocationName, timeInMillis, userLat, userLng);
         Destination destinationToPut = null;
 
         if (firebaseUser != null) {

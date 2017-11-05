@@ -12,6 +12,7 @@ import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by kurti on 11/3/2017.
@@ -51,10 +52,21 @@ public class RouteAdapter extends BaseAdapter {
         TextView routeTimeTextView = rowView.findViewById(R.id.route_time);
 
         Route route = (Route) getItem(position);
-        titleTextView.setText("From " + route.getStartLocationName());
-        String routeTime = Long.toString(route.getTimeInMillis()) + " min";
+        String titleText = "From " + route.getStartLocationName();
+        titleTextView.setText(titleText);
+        String routeTime = getTimeText(route.getTimeInMillis());
         routeTimeTextView.setText(routeTime);
 
         return rowView;
+    }
+
+    private String getTimeText(long timeInMillis) {
+        int secs = (int) timeInMillis/1000;
+        int mins = secs/60;
+        secs %= 60;
+        String minText = mins == 1 ? " min " : " mins ";
+        String secText = secs == 1 ? " sec " : " secs ";
+
+        return Integer.toString(mins) + minText + secs + secText;
     }
 }

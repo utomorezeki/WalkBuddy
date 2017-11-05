@@ -15,25 +15,31 @@
         android:padding="@dimen/activity_horizontal_margin">
 
         <TextView
+            android:id="@+id/timerValue"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Recording started. Press Stop when Finished"/>
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20sp"
+            android:textSize="50sp"
+            android:textColor="@color/white"
+            android:text="00:00:00"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:padding="10dp"
+            android:text="You route is being recorded."
+            android:textColor="@android:color/white"
+            android:textSize="20sp"/>
+
         <Button
             android:id="@+id/stopButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="@color/colorAccent"
             android:text="Stop Recording" />
-        <TextView
-            android:id="@+id/TEST1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""/>
-        <TextView
-            android:id="@+id/TEST2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""/>
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>
