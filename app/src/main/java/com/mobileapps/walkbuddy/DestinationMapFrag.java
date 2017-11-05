@@ -8,11 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.mobileapps.walkbuddy.models.Route;
@@ -82,6 +85,9 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
         Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(false)
                 .addAll(userData));
+        mGoogleMap.addMarker(new MarkerOptions().position(userData.get(userData.size() - 1)).title("Destination"));
+        CameraPosition dest = CameraPosition.builder().target(userData.get(0)).zoom(16).build();
+        mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(dest));
     }
 
     public ArrayList<LatLng> getUserRoute() {
