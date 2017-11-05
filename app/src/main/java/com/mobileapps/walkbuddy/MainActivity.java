@@ -38,6 +38,7 @@ import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.models.User;
 import com.mobileapps.walkbuddy.walkbuddy.R;
+import com.mobileapps.walkbuddy.walkbuddy.SaveRouteFragment;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener, RoutesFragment.OnFragmentInteractionListener,
-        AccountFragment.OnAccountFragmentInteractionListener, DestinationsFragment.OnDestinationsFragmentInteractionListener, HelpAboutFragment.OnHelpAboutFragmentInteractionListener{
+        AccountFragment.OnAccountFragmentInteractionListener, DestinationsFragment.OnDestinationsFragmentInteractionListener, HelpAboutFragment.OnHelpAboutFragmentInteractionListener, SaveRouteFragment.OnSaveRouteFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
     private DatabaseReference mDatabase;
@@ -67,18 +68,36 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        if (savedInstanceState == null) {
-            Fragment fragment = null;
-            Class fragmentClass = FindRoutesFragment.class;
-            try {
-                fragment = (Fragment) fragmentClass.newInstance();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if(getIntent().hasExtra("data"))
+        {
+            Bundle extras = getIntent().getBundleExtra("data");
+            CharSequence destinationName = extras.getCharSequence("name");
+            ArrayList<Double> userLat = (ArrayList<Double>) extras.getSerializable("userLat");
+            ArrayList<Double> userLng = (ArrayList<Double>) extras.getSerializable("userLng");
+            double destLat = extras.getDouble("destLat");
+            double destLng = extras.getDouble("destLng");
 
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
+            if (savedInstanceState == null) {
+                Fragment fragment = SaveRouteFragment.newInstance(destinationName, userLat, userLng, destLat, destLng);
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
+            }
+        } else {
+            if (savedInstanceState == null) {
+                Fragment fragment = null;
+                Class fragmentClass = FindRoutesFragment.class;
+                try {
+                    fragment = (Fragment) fragmentClass.newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
+            }
         }
+
+        // Save recorded route
 
         //Get Firebase mAuth instance
         mAuth = FirebaseAuth.getInstance();
@@ -301,6 +320,10 @@ public class MainActivity extends AppCompatActivity
         }
 
         // Restart activity
+        refreshMainActivity();
+    }
+
+    public void refreshMainActivity() {
         startActivity(new Intent(MainActivity.this, MainActivity.class));
         finish();
     }
@@ -362,20 +385,42 @@ public class MainActivity extends AppCompatActivity
             final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
             destinationReference.child(destinationName).removeValue();
         }
+    }
 
-        // Refresh list
-        Fragment fragment = null;
-        try {
-            fragment = DestinationsFragment.class.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
+    @Override
+    public void cancelSaveRoute() {
+        Toast.makeText(MainActivity.this, "Your route has not been saved", Toast.LENGTH_SHORT).show();
+        refreshMainActivity();
+    }
+
+    @Override
+    public void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng) {
+        List<Route> routes = null;
+        Route newRoute = new Route(destinationName, startLocationName, 1000, userLat, userLng);
+        Destination destinationToPut = null;
+
+        if (firebaseUser != null) {
+            final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
+
+            for (Destination d : destinations) {
+                if (d.getDestinationName().equals(destinationName)) {
+                    destinationToPut = d;
+                    routes = d.getRoutes();
+                }
+            }
+
+            if (destinationToPut != null) {
+                routes.add(newRoute);
+                destinationToPut = new Destination(routes, destinationToPut.getDestinationName());
+            } else {
+                routes = new ArrayList<>();
+                routes.add(newRoute);
+                destinationToPut = new Destination(routes, destinationName);
+            }
+
+            destinationReference.child(destinationToPut.getDestinationName()).setValue(destinationToPut);
         }
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction ft = fragmentManager.beginTransaction();
-        ft.detach(fragment);
-        ft.attach(fragment);
-        ft.replace(R.id.mainContent, fragment).commit();
+
+        refreshMainActivity();
     }
 }

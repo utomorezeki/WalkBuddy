@@ -50,7 +50,7 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_record);
 
-        Bundle extra = getIntent().getExtras();
+        Bundle extra = getIntent().getBundleExtra("data");
         name = extra.getCharSequence("name","error");
         lat = extra.getDouble("lat",0);
         lng = extra.getDouble("long",0);

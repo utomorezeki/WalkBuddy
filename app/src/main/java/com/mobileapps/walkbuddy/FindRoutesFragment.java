@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,8 +37,6 @@ public class FindRoutesFragment extends Fragment {
     Button findPlaceBut;
     LatLng placeLoc;
     CharSequence placeName;
-    TextView testName;
-    TextView testLoc;
 
     private final static int MY_PERMISSION_FINE_LOCATION = 101;
     private final static int PLACE_PICKER_REQUEST = 1;
@@ -63,9 +62,7 @@ public class FindRoutesFragment extends Fragment {
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        findPlaceBut =  (Button) view.findViewById(R.id.pickPlace);
-        testName = (TextView) view.findViewById(R.id.testName);
-        testName = (TextView) view.findViewById(R.id.testLoc);
+        findPlaceBut = view.findViewById(R.id.pickPlace);
         findPlaceBut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -146,7 +143,6 @@ public class FindRoutesFragment extends Fragment {
                 Place place = PlacePicker.getPlace(getActivity(), data);
                 placeName = place.getName();
                 placeLoc = place.getLatLng();
-                testName.append(placeName);
             }
         }
 
