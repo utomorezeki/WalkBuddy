@@ -51,7 +51,7 @@ public class RouteAdapter extends BaseAdapter {
         TextView routeTimeTextView = rowView.findViewById(R.id.route_time);
 
         Route route = (Route) getItem(position);
-        titleTextView.setText("From " + route.getRouteName());
+        titleTextView.setText("From " + route.getStartLocationName());
         String routeTime = Long.toString(route.getTimeInMillis()) + " min";
         routeTimeTextView.setText(routeTime);
 

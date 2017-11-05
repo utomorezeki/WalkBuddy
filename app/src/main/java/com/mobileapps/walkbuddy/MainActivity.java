@@ -43,7 +43,9 @@ import com.mobileapps.walkbuddy.walkbuddy.SaveRouteFragment;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener, RoutesFragment.OnFragmentInteractionListener,
@@ -412,13 +414,17 @@ public class MainActivity extends AppCompatActivity
             if (destinationToPut != null) {
                 routes.add(newRoute);
                 destinationToPut = new Destination(routes, destinationToPut.getDestinationName());
+                Map<String, Object> updatedDestination = new HashMap<>();
+                updatedDestination.put(destinationToPut.getDestinationName(), destinationToPut);
+                destinationReference.updateChildren(updatedDestination);
             } else {
                 routes = new ArrayList<>();
                 routes.add(newRoute);
                 destinationToPut = new Destination(routes, destinationName);
+                destinationReference.child(destinationToPut.getDestinationName()).setValue(destinationToPut);
             }
 
-            destinationReference.child(destinationToPut.getDestinationName()).setValue(destinationToPut);
+
         }
 
         refreshMainActivity();

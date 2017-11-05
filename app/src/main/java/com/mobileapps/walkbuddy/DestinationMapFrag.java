@@ -1,7 +1,5 @@
 package com.mobileapps.walkbuddy;
 
-import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -20,6 +18,7 @@ import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
     MapView mMapView;
@@ -67,9 +66,17 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
         MapsInitializer.initialize(getContext());
         mGoogleMap = googleMap;
         googleMap.setMapType(googleMap.MAP_TYPE_NORMAL);
-        ArrayList<LatLng> userData = userR.getUserRoute();
+        ArrayList<LatLng> userData = getUserRoute(userR);
         Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(false)
                 .addAll(userData));
+    }
+
+    public ArrayList<LatLng> getUserRoute(Route route) {
+        ArrayList<LatLng> result = new ArrayList<>();
+        for(int i = 0; i < route.getVerticesLat().size(); i++){
+            result.add(new LatLng(route.getVerticesLat().get(i),route.getVerticesLng().get(i)));
+        }
+        return result;
     }
 }

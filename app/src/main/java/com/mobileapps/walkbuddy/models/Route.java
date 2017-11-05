@@ -1,8 +1,5 @@
 package com.mobileapps.walkbuddy.models;
 
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -10,7 +7,7 @@ import java.util.List;
  */
 
 public class Route {
-    private String routeName;
+    private String destinationName;
     private String startLocationName;
     private long timeInMillis;
     private List<Double> verticesLat;
@@ -19,23 +16,19 @@ public class Route {
     public Route() {}
 
     public Route(String routeName, String startLocationName, long timeInMillis, List<Double> verticesLat, List<Double> verticesLng) {
-        this.routeName = routeName;
+        this.destinationName = routeName;
         this.startLocationName = startLocationName;
         this.timeInMillis = timeInMillis;
         this.verticesLat = verticesLat;
         this.verticesLng = verticesLng;
     }
 
-    public ArrayList<LatLng> getUserRoute(){
-        ArrayList<LatLng> result = new ArrayList<LatLng>();
-        for(int i = 0; i < verticesLat.size(); i++){
-            result.add(new LatLng(verticesLat.get(i),verticesLng.get(i)));
-        }
-        return result;
-    }
-    public String getRouteName() { return this.routeName; }
+    public String getDestinationName() { return this.destinationName; }
 
     public String getStartLocationName() { return this.startLocationName; }
 
     public long getTimeInMillis() { return this.timeInMillis; }
+
+    public List<Double> getVerticesLat() { return this.verticesLat; }
+    public List<Double> getVerticesLng() { return this.verticesLng; }
 }
