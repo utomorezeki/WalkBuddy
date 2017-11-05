@@ -426,7 +426,7 @@ public class MainActivity extends AppCompatActivity
                 destinationReference.child(destinationToPut.getDestinationName()).setValue(destinationToPut);
             }
 
-
+            Toast.makeText(MainActivity.this, "Your route has been saved", Toast.LENGTH_SHORT).show();
         }
 
         refreshMainActivity();
