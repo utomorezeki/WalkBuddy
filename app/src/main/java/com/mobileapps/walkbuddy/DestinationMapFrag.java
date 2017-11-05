@@ -1,6 +1,7 @@
 package com.mobileapps.walkbuddy;
 
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -21,20 +22,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
+    private static final String ARG_VERTICES_LAT = "verticesLat";
+    private static final String ARG_VERTICES_LNG = "verticesLng";
+
     MapView mMapView;
     GoogleMap mGoogleMap;
     View mView;
-    public Route userR;
+    private List<Double> verticesLat;
+    private List<Double> verticesLng;
 
     public DestinationMapFrag() {
         // Required empty public constructor
     }
 
+    public static DestinationMapFrag newInstance(ArrayList<Double> verticesLat, ArrayList<Double> verticesLng) {
+        DestinationMapFrag fragment = new DestinationMapFrag();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_VERTICES_LAT, verticesLat);
+        args.putSerializable(ARG_VERTICES_LNG, verticesLng);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            this.verticesLat = (List<Double>) getArguments().getSerializable(ARG_VERTICES_LAT);
+            this.verticesLng = (List<Double>) getArguments().getSerializable(ARG_VERTICES_LNG);
+        }
     }
 
     @Override
@@ -55,10 +71,6 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
             mMapView.onResume();
             mMapView.getMapAsync(this);
         }
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            userR = bundle.getParcelable("data");
-        }
     }
 
     @Override
@@ -66,16 +78,16 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
         MapsInitializer.initialize(getContext());
         mGoogleMap = googleMap;
         googleMap.setMapType(googleMap.MAP_TYPE_NORMAL);
-        ArrayList<LatLng> userData = getUserRoute(userR);
+        ArrayList<LatLng> userData = getUserRoute();
         Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(false)
                 .addAll(userData));
     }
 
-    public ArrayList<LatLng> getUserRoute(Route route) {
+    public ArrayList<LatLng> getUserRoute() {
         ArrayList<LatLng> result = new ArrayList<>();
-        for(int i = 0; i < route.getVerticesLat().size(); i++){
-            result.add(new LatLng(route.getVerticesLat().get(i),route.getVerticesLng().get(i)));
+        for(int i = 0; i < this.verticesLat.size(); i++){
+            result.add(new LatLng(this.verticesLat.get(i),this.verticesLng.get(i)));
         }
         return result;
     }

@@ -3,8 +3,10 @@ package com.mobileapps.walkbuddy;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -82,6 +85,23 @@ public class RoutesFragment extends Fragment {
 
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(destinationName);
         mListView = mFrameLayout.findViewById(R.id.route_list);
+
+        mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Route selectedRoute = routes.get(position);
+
+                ArrayList<Double> verticesLat = (ArrayList<Double>) selectedRoute.getVerticesLat();
+                ArrayList<Double> verticesLng = (ArrayList<Double>) selectedRoute.getVerticesLng();
+
+                Fragment fragment = DestinationMapFrag.newInstance(verticesLat, verticesLng);
+
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.mainContent, fragment, "");
+                fragmentTransaction.commit();
+            }
+        });
 
         RouteAdapter adapter = new RouteAdapter(getActivity(), routes);
         mListView.setAdapter(adapter);
