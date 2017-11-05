@@ -22,6 +22,8 @@
             android:screenOrientation="portrait"/>
         <activity android:name="com.mobileapps.walkbuddy.ResetPasswordActivity"
             android:screenOrientation="portrait"/>
+        <activity android:name="com.mobileapps.walkbuddy.RecordActivity"
+            android:screenOrientation="portrait"/>
         <activity android:name="com.mobileapps.walkbuddy.LoginActivity"
             android:screenOrientation="portrait" >
             <intent-filter>

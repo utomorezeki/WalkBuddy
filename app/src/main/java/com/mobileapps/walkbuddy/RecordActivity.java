@@ -83,7 +83,7 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
             public void onLocationChanged(Location location) {
                 verticesLat.add(location.getLatitude());
                 verticesLng.add(location.getLongitude());
-                TEST1.setText("LANGITUDE: " + location.getLatitude());
+                TEST1.setText("LATITUDE: " + location.getLatitude());
                 TEST2.setText("LONGITUDE: " + location.getLongitude());
 
             }
