@@ -46,6 +46,7 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
     LocationRequest mLocationRequest;
 
     Button stopButton;
+    Button cancelButton;
     TextView timerText;
     Handler customHandler = new Handler();
     long startTime = 0, timeInMillis = 0;
@@ -121,6 +122,15 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
                 extra.putLong("timeInMillis", timeInMillis);
                 intent.putExtra("data",extra);
                 startActivity(intent);
+                finish();
+            }
+        });
+
+        cancelButton = findViewById(R.id.btn_cancel_route);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RecordActivity.this, MainActivity.class));
                 finish();
             }
         });

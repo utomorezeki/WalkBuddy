@@ -41,7 +41,7 @@
     <string name="starting_location">Starting location</string>
     <string name="btn_find_routes">Find Routes</string>
     <string name="find_routes_message">Pick a destination and get going.</string>
-    <string name="route_completed_message">That was a great route! Please specify your starting location and destination name for easy identification if you wish to walk the route again. Otherwise, we\'ll just save this route for you using your coordinates."</string>
+    <string name="route_completed_message">That was a great route! Please specify your starting location and destination name for easy identification if you wish to walk this route again. Otherwise, we\'ll just save this route for you using your coordinates."</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

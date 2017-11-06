@@ -52,14 +52,11 @@ public class DestinationAdapter extends BaseAdapter {
 
         Destination destination = (Destination) getItem(position);
         titleTextView.setText(destination.getDestinationName());
-        String routeCount = Integer.toString(destination.getRoutes().size()) + " routes";
-        routeCountTextView.setText(routeCount);
+        int routeCount = destination.getRoutes().size();
+        String routeAppend = routeCount == 1 ? " route" : " routes";
+        String routeCountText = routeCount + routeAppend;
+        routeCountTextView.setText(routeCountText);
 
         return rowView;
-    }
-
-    public void setList(List<Destination> newDestinations) {
-        this.mDataSource = newDestinations;
-        this.notifyDataSetChanged();
     }
 }

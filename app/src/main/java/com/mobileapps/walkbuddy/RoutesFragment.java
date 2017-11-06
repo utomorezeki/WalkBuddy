@@ -1,12 +1,14 @@
 package com.mobileapps.walkbuddy;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +27,7 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link RoutesFragment.OnFragmentInteractionListener} interface
+ * {@link RoutesFragment.OnRoutesFragmentInteractionListener} interface
  * to handle interaction events.
  * Use the {@link RoutesFragment#newInstance} factory method to
  * create an instance of this fragment.
@@ -42,8 +44,9 @@ public class RoutesFragment extends Fragment {
     private List<Route> routes = new ArrayList<>();
 
     private ListView mListView;
+    private RouteAdapter adapter;
 
-    private OnFragmentInteractionListener mListener;
+    private OnRoutesFragmentInteractionListener mListener;
 
     public RoutesFragment() {
         // Required empty public constructor
@@ -75,6 +78,7 @@ public class RoutesFragment extends Fragment {
             Destination destination = ((MainActivity)getActivity()).destinations.get(destinationPosition);
             routes = destination.getRoutes();
         }
+        adapter = new RouteAdapter(getActivity(), routes);
     }
 
     @Override
@@ -84,7 +88,12 @@ public class RoutesFragment extends Fragment {
         FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_routes, container, false);
 
         ((MainActivity)getActivity()).getSupportActionBar().setTitle(destinationName);
+
         mListView = mFrameLayout.findViewById(R.id.route_list);
+        mListView.setAdapter(adapter);
+
+
+        mListView.setLongClickable(true);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -103,24 +112,51 @@ public class RoutesFragment extends Fragment {
             }
         });
 
-        RouteAdapter adapter = new RouteAdapter(getActivity(), routes);
-        mListView.setAdapter(adapter);
+        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long id) {
+                if(routes.size() > 1) {
+                    final int selectedPosition = position;
+                    final Route selectedRoute = routes.get(selectedPosition);
+
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+                    alertDialogBuilder.setTitle("Delete Destination");
+
+                    alertDialogBuilder
+                            .setMessage("Are you sure you want to delete the route from " + selectedRoute.getStartLocationName() + "?")
+                            .setCancelable(false)
+                            .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    mListener.deleteRoute(destinationName, selectedPosition);
+                                    adapter.notifyDataSetChanged();
+                                    if (routes.size() == 1) {
+                                        mListView.setLongClickable(false);
+                                    }
+                                }
+                            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.cancel();
+                        }
+                    });
+
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+                    alertDialog.show();
+                }
+                return true;
+            }
+        });
 
         return mFrameLayout;
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onRoutesFragmentInteraction(uri);
-        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnRoutesFragmentInteractionListener) {
+            mListener = (OnRoutesFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -143,8 +179,8 @@ public class RoutesFragment extends Fragment {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
+    public interface OnRoutesFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onRoutesFragmentInteraction(Uri uri);
+        void deleteRoute(String destinationName, int routeIndex);
     }
 }

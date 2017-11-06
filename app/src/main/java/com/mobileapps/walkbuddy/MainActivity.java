@@ -7,21 +7,16 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,17 +33,14 @@ import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.models.User;
 import com.mobileapps.walkbuddy.walkbuddy.R;
-import com.mobileapps.walkbuddy.walkbuddy.SaveRouteFragment;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener, RoutesFragment.OnFragmentInteractionListener,
+        implements NavigationView.OnNavigationItemSelectedListener, FindRoutesFragment.OnFindRoutesFragmentInteractionListener, RoutesFragment.OnRoutesFragmentInteractionListener,
         AccountFragment.OnAccountFragmentInteractionListener, DestinationsFragment.OnDestinationsFragmentInteractionListener, HelpAboutFragment.OnHelpAboutFragmentInteractionListener, SaveRouteFragment.OnSaveRouteFragmentInteractionListener {
 
     private static final String TAG = "MainActivity";
@@ -379,11 +371,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onRoutesFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
     public void deleteDestination(String destinationName) {
         if (firebaseUser != null) {
             final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
@@ -393,7 +380,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void cancelSaveRoute() {
-        Toast.makeText(MainActivity.this, "Your route has not been saved", Toast.LENGTH_SHORT).show();
+        Toast.makeText(MainActivity.this, "Route cancelled", Toast.LENGTH_SHORT).show();
         refreshMainActivity();
     }
 
@@ -430,5 +417,28 @@ public class MainActivity extends AppCompatActivity
         }
 
         refreshMainActivity();
+    }
+
+    @Override
+    public void deleteRoute(String destinationName, int routeIndex) {
+        if (firebaseUser != null) {
+            final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
+            Destination destinationToPut = null;
+
+            for (Destination d : destinations) {
+                if (d.getDestinationName().equals(destinationName)) {
+                    destinationToPut = d;
+                }
+            }
+
+            List<Route> routes = destinationToPut.getRoutes();
+            routes.remove(routeIndex);
+
+            destinationToPut = new Destination(routes, destinationName);
+
+            Map<String, Object> updatedDestination = new HashMap<>();
+            updatedDestination.put(destinationName, destinationToPut);
+            destinationReference.updateChildren(updatedDestination);
+        }
     }
 }

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mobileapps.walkbuddy.walkbuddy.SaveRouteFragment"
+    tools:context="com.mobileapps.walkbuddy.walkbuddy.com.mobileapps.walkbuddy.SaveRouteFragment"
     android:layout_gravity="center"
     android:background="@color/colorPrimaryDark"
     android:fitsSystemWindows="true">
@@ -16,12 +16,15 @@
         android:padding="@dimen/activity_horizontal_margin">
 
 
-        <ImageView
-            android:layout_width="@dimen/logo_w_h"
-            android:layout_height="@dimen/logo_w_h"
+        <TextView
+            android:id="@+id/final_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginBottom="10dp"
-            android:src="@drawable/ic_help_outline_white_24dp" />
+            android:text="00:00"
+            android:textColor="@color/white"
+            android:textSize="64sp" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -80,7 +83,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center">
             <Button
                 android:id="@+id/btn_cancel_route"
                 android:paddingStart="8dp"
@@ -88,21 +92,25 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dip"
-                android:background="@null"
+                style="?android:attr/borderlessButtonStyle"
                 android:text="Cancel Route"
+                android:textAllCaps="false"
                 android:textColor="@android:color/white" />
 
             <Button
                 android:id="@+id/btn_save_route"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:layout_alignParentRight="true"
+                style="?android:textAppearanceSmall"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dip"
-                android:background="@color/colorAccent"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:layout_toEndOf="@id/btn_cancel_route"
+                android:layout_marginTop="20dp"
+                android:layout_marginStart="50dp"
+                android:background="@drawable/pill_button_accent_small"
                 android:text="Save Route"
-                android:textColor="@android:color/black" />
+                android:textColor="@android:color/black"
+                android:textStyle="bold" />
         </RelativeLayout>
 
 

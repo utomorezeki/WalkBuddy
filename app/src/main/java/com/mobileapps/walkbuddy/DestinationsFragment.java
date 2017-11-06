@@ -28,7 +28,7 @@ public class DestinationsFragment extends Fragment {
     private OnDestinationsFragmentInteractionListener mListener;
     private ListView mListView;
     private List<Destination> destinations = new ArrayList<>();
-    DestinationAdapter adapter;
+    private DestinationAdapter adapter;
 
     public DestinationsFragment() {
         // Required empty public constructor
@@ -50,6 +50,7 @@ public class DestinationsFragment extends Fragment {
         ((MainActivity)getActivity()).getSupportActionBar().setTitle("Destinations");
 
         mListView = mFrameLayout.findViewById(R.id.destination_list);
+        mListView.setAdapter(adapter);
 
         mListView.setLongClickable(true);
 
@@ -85,8 +86,8 @@ public class DestinationsFragment extends Fragment {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
                                 mListener.deleteDestination(selectedDestination.getDestinationName());
-                                destinations = ((MainActivity)getActivity()).destinations;
-                                adapter.setList(destinations);
+                                destinations.remove(selectedPosition);
+                                adapter.notifyDataSetChanged();
                             }
                         }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
@@ -100,7 +101,6 @@ public class DestinationsFragment extends Fragment {
                 return true;
             }
         });
-        mListView.setAdapter(adapter);
 
         return mFrameLayout;
     }

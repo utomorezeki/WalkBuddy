@@ -1,8 +1,6 @@
-package com.mobileapps.walkbuddy.walkbuddy;
+package com.mobileapps.walkbuddy;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.text.TextUtils;
@@ -12,11 +10,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
-import com.mobileapps.walkbuddy.MainActivity;
+import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 
 /**
@@ -92,6 +92,11 @@ public class SaveRouteFragment extends Fragment {
         // Inflate the layout for this fragment
         FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_save_route, container, false);
 
+        TextView finalTimeText = frameLayout.findViewById(R.id.final_time);
+
+        // Set time
+        finalTimeText.setText(getFinalTime());
+
         Button btnSaveRoute = frameLayout.findViewById(R.id.btn_save_route);
         Button btnCancelRoute = frameLayout.findViewById(R.id.btn_cancel_route);
 
@@ -148,6 +153,13 @@ public class SaveRouteFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    private String getFinalTime() {
+        int secs = (int) timeInMillis/1000;
+        int mins = secs/60;
+        secs %= 60;
+        return String.format(Locale.getDefault(), "%02d", mins) + ":" + String.format(Locale.getDefault(), "%02d",secs);
     }
 
     /**
