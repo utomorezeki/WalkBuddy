@@ -149,6 +149,13 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
         if (mRequestingLocationUpdates) {
             startLocationUpdates();
         }
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                    mGoogleApiClient);
+            verticesLat.add(mLastLocation.getLatitude());
+            verticesLng.add(mLastLocation.getLongitude());
+        }
+
     }
 
     protected void startLocationUpdates() {
