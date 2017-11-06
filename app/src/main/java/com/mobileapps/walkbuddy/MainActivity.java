@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,7 @@ import com.mobileapps.walkbuddy.models.User;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +55,8 @@ public class MainActivity extends AppCompatActivity
     public List<Destination> destinations = new ArrayList<>();
     private FirebaseUser firebaseUser;
 
+    private ArrayList<Route> quickestRoutes;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate called");
@@ -61,6 +65,12 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Get Firebase mAuth instance
+        mAuth = FirebaseAuth.getInstance();
+        // Get Database instance
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+        firebaseUser = mAuth.getCurrentUser();
 
         if(getIntent().hasExtra("data"))
         {
@@ -79,26 +89,34 @@ public class MainActivity extends AppCompatActivity
             }
         } else {
             if (savedInstanceState == null) {
-                Fragment fragment = null;
-                Class fragmentClass = FindRoutesFragment.class;
-                try {
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                // Quickest routes
+                if(mAuth.getCurrentUser() != null) {
+                    mDatabase.child("users").child(mAuth.getUid()).child("destinations").addListenerForSingleValueEvent(
+                            new ValueEventListener() {
+                                @Override
+                                public void onDataChange(DataSnapshot dataSnapshot) {
+                                    List<Destination> dests = new ArrayList<>();
+                                    Iterable<DataSnapshot> it = dataSnapshot.getChildren();
+                                    for (DataSnapshot snap : it) {
+                                        dests.add(snap.getValue(Destination.class));
+                                    }
+                                    quickestRoutes = getQuickestRoutes(dests);
 
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
+                                    Fragment fragment = FindRoutesFragment.newInstance(quickestRoutes);
+
+                                    FragmentManager fragmentManager = getSupportFragmentManager();
+                                    fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
+                                }
+
+                                @Override
+                                public void onCancelled(DatabaseError databaseError) {
+                                    Log.e(TAG, databaseError.toString());
+                                }
+                            }
+                    );
+                }
             }
         }
-
-        // Save recorded route
-
-        //Get Firebase mAuth instance
-        mAuth = FirebaseAuth.getInstance();
-        // Get Database instance
-        mDatabase = FirebaseDatabase.getInstance().getReference();
-        firebaseUser = mAuth.getCurrentUser();
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -193,22 +211,20 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
-        Class fragmentClass = null;
-        if (id == R.id.nav_routes) {
-            fragmentClass = FindRoutesFragment.class;
-        } else if (id == R.id.nav_destinations) {
-            fragmentClass = DestinationsFragment.class;
-        } else if (id == R.id.nav_account) {
-            fragmentClass = AccountFragment.class;
-        } else if (id == R.id.nav_help_and_about) {
-            fragmentClass = HelpAboutFragment.class;
-        }
-
         try {
-            fragment = (Fragment) fragmentClass.newInstance();
+            if (id == R.id.nav_routes) {
+                fragment = FindRoutesFragment.newInstance(quickestRoutes);
+            } else if (id == R.id.nav_destinations) {
+                fragment = DestinationsFragment.newInstance(destinations);
+            } else if (id == R.id.nav_account) {
+                fragment = AccountFragment.class.newInstance();
+            } else if (id == R.id.nav_help_and_about) {
+                fragment = HelpAboutFragment.class.newInstance();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         FragmentManager fragmentManager = getSupportFragmentManager();
         fragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).commit();
@@ -374,7 +390,10 @@ public class MainActivity extends AppCompatActivity
     public void deleteDestination(String destinationName) {
         if (firebaseUser != null) {
             final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
-            destinationReference.child(destinationName).removeValue();
+            String trimmedName = destinationName;
+            trimmedName = trimmedName.replaceAll("\\P{Print}", "");
+            trimmedName = trimmedName.replaceAll("\\.|\\$|\\[|\\]|#|/", "");
+            destinationReference.child(trimmedName).removeValue();
         }
     }
 
@@ -389,12 +408,15 @@ public class MainActivity extends AppCompatActivity
         List<Route> routes = null;
         Route newRoute = new Route(destinationName, startLocationName, timeInMillis, userLat, userLng);
         Destination destinationToPut = null;
+        String trimmedName = destinationName;
+        trimmedName = trimmedName.replaceAll("\\P{Print}", "");
+        trimmedName = trimmedName.replaceAll("\\.|\\$|\\[|\\]|#|/", "");
 
         if (firebaseUser != null) {
             final DatabaseReference destinationReference = mDatabase.child("users").child(mAuth.getUid()).child("destinations");
 
             for (Destination d : destinations) {
-                if (d.getDestinationName().equals(destinationName)) {
+                if (d.getDestinationName().equals(trimmedName)) {
                     destinationToPut = d;
                     routes = d.getRoutes();
                 }
@@ -404,13 +426,13 @@ public class MainActivity extends AppCompatActivity
                 routes.add(newRoute);
                 destinationToPut = new Destination(routes, destinationToPut.getDestinationName());
                 Map<String, Object> updatedDestination = new HashMap<>();
-                updatedDestination.put(destinationToPut.getDestinationName(), destinationToPut);
+                updatedDestination.put(trimmedName, destinationToPut);
                 destinationReference.updateChildren(updatedDestination);
             } else {
                 routes = new ArrayList<>();
                 routes.add(newRoute);
                 destinationToPut = new Destination(routes, destinationName);
-                destinationReference.child(destinationToPut.getDestinationName()).setValue(destinationToPut);
+                destinationReference.child(trimmedName).setValue(destinationToPut);
             }
 
             Toast.makeText(MainActivity.this, "Your route has been saved", Toast.LENGTH_SHORT).show();
@@ -435,10 +457,27 @@ public class MainActivity extends AppCompatActivity
             routes.remove(routeIndex);
 
             destinationToPut = new Destination(routes, destinationName);
+            String trimmedName = destinationName;
+            trimmedName = trimmedName.replaceAll("\\P{Print}", "");
+            trimmedName = trimmedName.replaceAll("\\.|\\$|\\[|\\]|#|/", "");
 
             Map<String, Object> updatedDestination = new HashMap<>();
-            updatedDestination.put(destinationName, destinationToPut);
+            updatedDestination.put(trimmedName, destinationToPut);
             destinationReference.updateChildren(updatedDestination);
         }
+    }
+
+    public ArrayList<Route> getQuickestRoutes(List<Destination> destinations) {
+        ArrayList<Route> result = new ArrayList<>();
+        for(Destination d : destinations) {
+            List<Route> routes = d.getRoutes();
+            for(Route r : routes) {
+                result.add(r);
+            }
+        }
+        RouteTimeComparator comparator = new RouteTimeComparator();
+        Collections.sort(result, comparator);
+
+        return result;
     }
 }

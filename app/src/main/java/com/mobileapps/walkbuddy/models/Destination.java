@@ -2,13 +2,14 @@ package com.mobileapps.walkbuddy.models;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by kurti on 11/2/2017.
  */
 
-public class Destination {
+public class Destination implements Serializable {
     @NotNull
     private List<Route> routes;
     private String destinationName;

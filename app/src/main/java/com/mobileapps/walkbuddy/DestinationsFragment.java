@@ -15,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.google.android.gms.vision.Frame;
 import com.mobileapps.walkbuddy.models.Destination;
@@ -24,20 +25,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DestinationsFragment extends Fragment {
+    private static final String ARG_DESTINATIONS = "destinations";
 
     private OnDestinationsFragmentInteractionListener mListener;
     private ListView mListView;
-    private List<Destination> destinations = new ArrayList<>();
+    private List<Destination> destinations;
     private DestinationAdapter adapter;
 
     public DestinationsFragment() {
         // Required empty public constructor
     }
 
+    public static DestinationsFragment newInstance(List<Destination> destinations) {
+        DestinationsFragment fragment = new DestinationsFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_DESTINATIONS, (ArrayList) destinations);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        destinations = ((MainActivity)getActivity()).destinations;
+        if(getArguments() != null) {
+            destinations = (ArrayList<Destination>) getArguments().getSerializable(ARG_DESTINATIONS);
+        }
         adapter = new DestinationAdapter(getActivity(), destinations);
     }
 
@@ -49,8 +61,18 @@ public class DestinationsFragment extends Fragment {
 
         ((MainActivity)getActivity()).getSupportActionBar().setTitle("Destinations");
 
+        TextView noRoutes = mFrameLayout.findViewById(R.id.no_routes_message);
+
         mListView = mFrameLayout.findViewById(R.id.destination_list);
         mListView.setAdapter(adapter);
+
+        if(destinations.size() > 0) {
+            noRoutes.setVisibility(View.GONE);
+        } else {
+            noRoutes.setVisibility(View.VISIBLE);
+            mListView.setVisibility(View.GONE);
+        }
+
 
         mListView.setLongClickable(true);
 

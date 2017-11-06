@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,11 +28,16 @@ import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
 
 import com.google.android.gms.maps.model.LatLng;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
+
+import java.util.ArrayList;
 
 
 public class FindRoutesFragment extends Fragment {
-
+    private static final String ARG_QUICKEST_ROUTES = "quickestRoutes";
 
     private OnFindRoutesFragmentInteractionListener mListener;
     Button findPlaceBut;
@@ -41,13 +47,32 @@ public class FindRoutesFragment extends Fragment {
     private final static int MY_PERMISSION_FINE_LOCATION = 101;
     private final static int PLACE_PICKER_REQUEST = 1;
 
+    private ArrayList<Route> quickestRoutes;
+    private ListView mListView;
+    private QuickestRoutesAdapter adapter;
+
+    private DatabaseReference mDatabase;
+    private FirebaseAuth mAuth;
+
     public FindRoutesFragment() {
         // Required empty public constructor
+    }
+
+    public static FindRoutesFragment newInstance(ArrayList<Route> quickestRoutes) {
+        FindRoutesFragment fragment = new FindRoutesFragment();
+        Bundle args = new Bundle();
+        args.putSerializable(ARG_QUICKEST_ROUTES, quickestRoutes);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(getArguments() != null) {
+            quickestRoutes = (ArrayList<Route>) getArguments().getSerializable(ARG_QUICKEST_ROUTES);
+        }
+        adapter = new QuickestRoutesAdapter(getActivity(), quickestRoutes);
     }
 
     @Override
@@ -79,6 +104,16 @@ public class FindRoutesFragment extends Fragment {
 
             }
         });
+
+        TextView noRoutes = view.findViewById(R.id.no_routes_message);
+
+        if(quickestRoutes != null) {
+            if (quickestRoutes.size() > 0) {
+                noRoutes.setVisibility(View.GONE);
+                mListView = view.findViewById(R.id.quickest_routes_list);
+                mListView.setAdapter(adapter);
+            }
+        }
     }
 
     @Override
@@ -97,6 +132,8 @@ public class FindRoutesFragment extends Fragment {
         super.onDetach();
         mListener = null;
     }
+
+
 
     /**
      * This interface must be implemented by activities that contain this

@@ -1,12 +1,13 @@
 package com.mobileapps.walkbuddy.models;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by kurti on 11/2/2017.
  */
 
-public class Route {
+public class Route implements Serializable {
     private String destinationName;
     private String startLocationName;
     private long timeInMillis;
