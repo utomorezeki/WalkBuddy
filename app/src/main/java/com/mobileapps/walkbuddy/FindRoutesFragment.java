@@ -143,26 +143,28 @@ public class FindRoutesFragment extends Fragment {
                 Place place = PlacePicker.getPlace(getActivity(), data);
                 placeName = place.getName();
                 placeLoc = place.getLatLng();
+
+                Fragment fragment = null;
+                Class mapFrag = MapFragment.class;
+                try {
+                    fragment = (Fragment) mapFrag.newInstance();
+                    Bundle bundle = new Bundle();
+                    bundle.putCharSequence("name", placeName);
+                    bundle.putDouble("lat",placeLoc.latitude);
+                    bundle.putDouble("long",placeLoc.longitude);
+                    fragment.setArguments(bundle);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.mainContent, fragment, "");
+                //fragmentTransaction.addToBackStack(null);
+                fragmentTransaction.commit();
             }
         }
 
-        Fragment fragment = null;
-        Class mapFrag = MapFragment.class;
-        try {
-            fragment = (Fragment) mapFrag.newInstance();
-            Bundle bundle = new Bundle();
-            bundle.putCharSequence("name", placeName);
-            bundle.putDouble("lat",placeLoc.latitude);
-            bundle.putDouble("long",placeLoc.longitude);
-            fragment.setArguments(bundle);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-        FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.mainContent, fragment, "");
-        //fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
     }
 }
