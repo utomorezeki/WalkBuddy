@@ -42,6 +42,11 @@
     <string name="btn_find_routes">Find Routes</string>
     <string name="find_routes_message">Pick a destination and get going.</string>
     <string name="route_completed_message">That was a great route! Please specify your starting location and destination name for easy identification if you wish to walk this route again. Otherwise, we\'ll just save this route for you using your coordinates."</string>
+    <string name="help_intro">Use this section as a reference for WalkBuddy\'s usage.</string>
+    <string name="find_routes_help">This tab is used to record new routes to destinations. It keeps track of your location, timing, and allows you to save the route with a specific destination name and start location.</string>
+    <string name="destinations_help">You can find all your past destinations, along with routes to them, here. If you want to walk a route again, just select it from the list and it will bring it up on the map, along with your location relative to it. Long press a destination or route to get the option to delete it.</string>
+    <string name="account_help">Edit your account information in the account tab. This includes changing your name, email, and password. You are also able to sign out here or delete your account entirely.</string>
+    <string name="about_info">WalkBuddy is an application for maximizing walking by minimizing time. It allows you to record routes to destinations you frequent, then times and stores those routes so that you can walk them again. By doing this, you are able to track the fastest route to every destination.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

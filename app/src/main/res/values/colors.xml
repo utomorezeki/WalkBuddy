@@ -3,6 +3,7 @@
     <color name="colorPrimary">#4B5D78</color>
     <color name="colorPrimaryDark">#3E4D63</color>
     <color name="colorAccent">#00e5ff</color>
+    <color name="colorAccentDark">#00a1b3</color>
 
     <color name="white">#ffffff</color>
     <color name="btn_logout_bg">#ff6861</color>
