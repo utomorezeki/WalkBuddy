@@ -1,12 +1,16 @@
 package com.mobileapps.walkbuddy;
 
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +31,7 @@ import java.util.List;
 public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
     private static final String ARG_VERTICES_LAT = "verticesLat";
     private static final String ARG_VERTICES_LNG = "verticesLng";
+    private final static int MY_PERMISSION_FINE_LOCATION = 101;
 
     MapView mMapView;
     GoogleMap mGoogleMap;
@@ -85,6 +90,14 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
         Polyline polyline1 = googleMap.addPolyline(new PolylineOptions()
                 .clickable(false)
                 .addAll(userData));
+
+        if (ActivityCompat.checkSelfPermission(getActivity(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mGoogleMap.setMyLocationEnabled(true);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, MY_PERMISSION_FINE_LOCATION);
+            }
+        }
         mGoogleMap.addMarker(new MarkerOptions().position(userData.get(userData.size() - 1)).title("Destination"));
         CameraPosition dest = CameraPosition.builder().target(userData.get(0)).zoom(16).build();
         mGoogleMap.moveCamera(CameraUpdateFactory.newCameraPosition(dest));
@@ -96,5 +109,23 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
             result.add(new LatLng(this.verticesLat.get(i),this.verticesLng.get(i)));
         }
         return result;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSION_FINE_LOCATION:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if (ActivityCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                        mGoogleMap.setMyLocationEnabled(true);
+                    }
+
+                } else {
+                    Toast.makeText(getContext(), "This app requires location permissions to be granted", Toast.LENGTH_LONG).show();
+
+                }
+                break;
+        }
     }
 }
