@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.common.ConnectionResult;
@@ -51,6 +52,7 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
     TextView timerText;
     Handler customHandler = new Handler();
     long startTime = 0, timeInMillis = 0;
+    private double distanceTolerance = 0.0006;
 
     Runnable updateTimerThread = new Runnable() {
         @Override
@@ -114,18 +116,25 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                customHandler.removeCallbacks(updateTimerThread);
-                Intent intent = new Intent(RecordActivity.this, MainActivity.class);
-                Bundle extra = new Bundle();
-                extra.putCharSequence("name",name);
-                extra.putSerializable("userLat",verticesLat);
-                extra.putSerializable("userLng",verticesLng);
-                extra.putDouble("destLat",lat);
-                extra.putDouble("destLng",lng);
-                extra.putLong("timeInMillis", timeInMillis);
-                intent.putExtra("data",extra);
-                startActivity(intent);
-                finish();
+                int size = verticesLat.size();
+                if(size > 0) {
+                    if(getDistance(verticesLat.get(size-1), verticesLng.get(size-1)) <= distanceTolerance) {
+                        customHandler.removeCallbacks(updateTimerThread);
+                        Intent intent = new Intent(RecordActivity.this, MainActivity.class);
+                        Bundle extra = new Bundle();
+                        extra.putCharSequence("name", name);
+                        extra.putSerializable("userLat", verticesLat);
+                        extra.putSerializable("userLng", verticesLng);
+                        extra.putDouble("destLat", lat);
+                        extra.putDouble("destLng", lng);
+                        extra.putLong("timeInMillis", timeInMillis);
+                        intent.putExtra("data", extra);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Toast.makeText(RecordActivity.this, "You are not at your destination yet", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
 
@@ -137,6 +146,10 @@ public class RecordActivity extends AppCompatActivity implements GoogleApiClient
                 finish();
             }
         });
+    }
+
+    private double getDistance(double x, double y) {
+        return Math.sqrt(Math.pow(lat-x,2.0) + Math.pow(lng-y,2.0));
     }
 
     @Override

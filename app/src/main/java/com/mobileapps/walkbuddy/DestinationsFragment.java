@@ -74,7 +74,7 @@ public class DestinationsFragment extends Fragment {
         }
 
 
-        mListView.setLongClickable(true);
+        //mListView.setLongClickable(true);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -91,38 +91,39 @@ public class DestinationsFragment extends Fragment {
             }
         });
 
-        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(final AdapterView<?> adapterView, View view, int position, long id) {
-                final int selectedPosition = position;
-                final Destination selectedDestination = destinations.get(selectedPosition);
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-
-                alertDialogBuilder.setTitle("Delete Destination");
-
-                alertDialogBuilder
-                        .setMessage("Are you sure you want to delete " + selectedDestination.getDestinationName() + " and all associated routes?")
-                        .setCancelable(false)
-                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                mListener.deleteDestination(selectedDestination.getDestinationName());
-                                destinations.remove(selectedPosition);
-                                adapter.notifyDataSetChanged();
-                            }
-                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        dialogInterface.cancel();
-                    }
-                });
-
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
-                return true;
-            }
-        });
+        // Long click for deletion. Will possibly implement later
+//        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+//            @Override
+//            public boolean onItemLongClick(final AdapterView<?> adapterView, View view, int position, long id) {
+//                final int selectedPosition = position;
+//                final Destination selectedDestination = destinations.get(selectedPosition);
+//
+//                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+//
+//                alertDialogBuilder.setTitle("Delete Destination");
+//
+//                alertDialogBuilder
+//                        .setMessage("Are you sure you want to delete " + selectedDestination.getDestinationName() + " and all associated routes?")
+//                        .setCancelable(false)
+//                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialogInterface, int i) {
+//                                mListener.deleteDestination(selectedDestination.getDestinationName());
+//                                destinations.remove(selectedPosition);
+//                                adapter.notifyDataSetChanged();
+//                            }
+//                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        dialogInterface.cancel();
+//                    }
+//                });
+//
+//                AlertDialog alertDialog = alertDialogBuilder.create();
+//                alertDialog.show();
+//                return true;
+//            }
+//        });
 
         return mFrameLayout;
     }
