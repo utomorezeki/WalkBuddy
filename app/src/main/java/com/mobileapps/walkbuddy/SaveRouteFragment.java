@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
@@ -20,29 +21,23 @@ import java.util.Locale;
 
 
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link SaveRouteFragment.OnSaveRouteFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link SaveRouteFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for saving a route that has just been recorded.
  */
 public class SaveRouteFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_DESTINATION_NAME = "destination_name";
     private static final String ARG_USER_LAT = "user_lat";
     private static final String ARG_USER_LNG = "user_lng";
     private static final String ARG_DEST_LAT = "dest_lat";
     private static final String ARG_DEST_LNG = "dest_lng";
+    private static final String ARG_POI_LAT = "poi_lat";
+    private static final String ARG_POI_LNG = "poi_lng";
     private static final String ARG_TIME = "timeInMillis";
 
-    // TODO: Rename and change types of parameters
-    private String destinationName;
     private List<Double> userLat;
     private List<Double> userLng;
     private double destLat;
     private double destLng;
+    private List<Double> poiLat;
+    private List<Double> poiLng;
     private long timeInMillis;
 
     private EditText editDestinationNameText, editStartLocationText;
@@ -60,14 +55,15 @@ public class SaveRouteFragment extends Fragment {
      * @return A new instance of fragment SaveRouteFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SaveRouteFragment newInstance(CharSequence destinationName, ArrayList<Double> userLat, ArrayList<Double> userLng, double destLat, double destLng, long timeInMillis) {
+    public static SaveRouteFragment newInstance(ArrayList<Double> userLat, ArrayList<Double> userLng, double destLat, double destLng, ArrayList<Double> poiLat, ArrayList<Double> poiLng, long timeInMillis) {
         SaveRouteFragment fragment = new SaveRouteFragment();
         Bundle args = new Bundle();
-        args.putCharSequence(ARG_DESTINATION_NAME, destinationName);
         args.putSerializable(ARG_USER_LAT, userLat);
         args.putSerializable(ARG_USER_LNG, userLng);
         args.putDouble(ARG_DEST_LAT, destLat);
         args.putDouble(ARG_DEST_LNG, destLng);
+        args.putSerializable(ARG_POI_LAT, poiLat);
+        args.putSerializable(ARG_POI_LNG, poiLng);
         args.putLong(ARG_TIME, timeInMillis);
         fragment.setArguments(args);
         return fragment;
@@ -77,11 +73,12 @@ public class SaveRouteFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            destinationName = (String) getArguments().getCharSequence(ARG_DESTINATION_NAME);
             userLat = (List<Double>) getArguments().getSerializable(ARG_USER_LAT);
             userLng = (List<Double>) getArguments().getSerializable(ARG_USER_LNG);
             destLat = getArguments().getDouble(ARG_DEST_LAT);
             destLng = getArguments().getDouble(ARG_DEST_LNG);
+            poiLat = (List<Double>) getArguments().getSerializable(ARG_POI_LAT);
+            poiLng = (List<Double>) getArguments().getSerializable(ARG_POI_LNG);
             timeInMillis = getArguments().getLong(ARG_TIME);
         }
     }
@@ -117,21 +114,16 @@ public class SaveRouteFragment extends Fragment {
                 String destinationInput = editDestinationNameText.getText().toString().trim();
 
                 if(TextUtils.isEmpty(startLocationInput)) {
-                    double startLat = userLat.get(0);
-                    double startLng = userLng.get(0);
-
-                    startLocationInput = Double.toString(startLat) + ", " + Double.toString(startLng);
+                    Toast.makeText(getActivity(), "Please enter a starting location", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
                 if(TextUtils.isEmpty(destinationInput)) {
-                    if(destinationName.equals("error")) {
-                        destinationInput = Double.toString(destLat) + ", " + Double.toString(destLng);
-                    } else {
-                        destinationInput = destinationName;
-                    }
+                    Toast.makeText(getActivity(), "Please enter a destination name", Toast.LENGTH_SHORT).show();
+                    return;
                 }
 
-                mListener.saveRoute(destinationInput, startLocationInput, userLat, userLng, timeInMillis);
+                mListener.saveRoute(destinationInput, startLocationInput, userLat, userLng, poiLat, poiLng, timeInMillis);
             }
         });
 
@@ -167,14 +159,24 @@ public class SaveRouteFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSaveRouteFragmentInteractionListener {
-        // TODO: Update argument type and name
+        /**
+         * Cancels route saving and goes back to main activity.
+         */
         void cancelSaveRoute();
-        void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng, long timeInMillis);
+
+        /**
+         * Saves route for user.
+         *
+         * @param destinationName
+         * @param startLocationName
+         * @param userLat
+         * @param userLng
+         * @param poiLat
+         * @param poiLng
+         * @param timeInMillis
+         */
+        void saveRoute(String destinationName, String startLocationName, List<Double> userLat, List<Double> userLng, List<Double> poiLat, List<Double> poiLng, long timeInMillis);
     }
 }

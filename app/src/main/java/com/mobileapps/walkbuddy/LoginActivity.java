@@ -18,6 +18,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
+/**
+ * Activity for logging the user in.
+ */
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";

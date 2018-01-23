@@ -1,23 +1,22 @@
 package com.mobileapps.walkbuddy;
 
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.content.Context;
-import android.net.Uri;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.Button;
-import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,7 +25,6 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlacePicker;
-
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
@@ -35,11 +33,13 @@ import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.ArrayList;
 
-
+/**
+ * Fragment for launching the main functionality of the app. Allows user to pick a place they wish
+ * to walk to and begin recording a route to that destination.
+ */
 public class FindRoutesFragment extends Fragment {
     private static final String ARG_QUICKEST_ROUTES = "quickestRoutes";
 
-    private OnFindRoutesFragmentInteractionListener mListener;
     Button findPlaceBut;
     LatLng placeLoc;
     CharSequence placeName;
@@ -78,10 +78,7 @@ public class FindRoutesFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        final FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_find_routes, container, false);
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle("WalkBuddy");
-        return mFrameLayout;
+        return inflater.inflate(R.layout.fragment_find_routes, container, false);
     }
 
     @Override
@@ -112,6 +109,31 @@ public class FindRoutesFragment extends Fragment {
                 noRoutes.setVisibility(View.GONE);
                 mListView = view.findViewById(R.id.quickest_routes_list);
                 mListView.setAdapter(adapter);
+
+                mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                        Route selectedRoute = quickestRoutes.get(position);
+
+                        ArrayList<Double> verticesLat = (ArrayList<Double>) selectedRoute.getVerticesLat();
+                        ArrayList<Double> verticesLng = (ArrayList<Double>) selectedRoute.getVerticesLng();
+                        ArrayList<Double> poiLat = (ArrayList<Double>) selectedRoute.getPoiLat();
+                        ArrayList<Double> poiLng = (ArrayList<Double>) selectedRoute.getPoiLng();
+
+                        long time = selectedRoute.getTimeInMillis();
+                        Fragment fragment;
+                        if (time > 420000) {
+                            fragment = DestinationMapFrag.newInstance(verticesLat, verticesLng, poiLat, poiLng);
+                        } else {
+                            fragment = DestinationLiteMapFrag.newInstance(verticesLat, verticesLng, poiLat, poiLng);
+                        }
+
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.mainContent, fragment, "");
+                        fragmentTransaction.addToBackStack(null).commit();
+                    }
+                });
             }
         }
     }
@@ -119,35 +141,11 @@ public class FindRoutesFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFindRoutesFragmentInteractionListener) {
-            mListener = (OnFindRoutesFragmentInteractionListener) context;
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement OnFindRoutesFragmentInteractionListener");
-        }
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
-    }
-
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFindRoutesFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFindRoutesFragmentInteraction();
     }
 
     private void requestPermission() {
@@ -197,7 +195,6 @@ public class FindRoutesFragment extends Fragment {
                 FragmentManager fragmentManager=getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction=fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.mainContent, fragment, "");
-                //fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         }

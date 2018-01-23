@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.mobileapps.walkbuddy.models.Destination;
@@ -14,7 +13,7 @@ import com.mobileapps.walkbuddy.walkbuddy.R;
 import java.util.List;
 
 /**
- * Created by kurti on 11/3/2017.
+ * Adapter for managing the Destination ListView.
  */
 
 public class DestinationAdapter extends BaseAdapter {

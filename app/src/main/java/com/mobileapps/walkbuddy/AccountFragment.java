@@ -2,10 +2,8 @@ package com.mobileapps.walkbuddy;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
@@ -19,28 +17,11 @@ import android.widget.Toast;
 
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
-import org.w3c.dom.Text;
-
-
 /**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnAccountFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link AccountFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * Fragment for managing a user's account.
  */
 public class AccountFragment extends Fragment {
     private static final String TAG = "AccountFragment";
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     private EditText editNameText, editEmailText, editPasswordText, confirmPasswordText;
 
@@ -50,32 +31,10 @@ public class AccountFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AccountFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AccountFragment newInstance(String param1, String param2) {
-        AccountFragment fragment = new AccountFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i(TAG, "onCreate called");
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -84,8 +43,6 @@ public class AccountFragment extends Fragment {
         Log.i(TAG, "onCreateView called");
         // Inflate the layout for this fragment
         final FrameLayout mFrameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_account, container, false);
-
-        ((MainActivity)getActivity()).getSupportActionBar().setTitle("Account");
 
         Button btnSignOut = mFrameLayout.findViewById(R.id.sign_out);
         Button btnDeleteAccount = mFrameLayout.findViewById(R.id.delete_account);

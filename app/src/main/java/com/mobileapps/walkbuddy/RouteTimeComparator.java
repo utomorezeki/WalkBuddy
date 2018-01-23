@@ -5,9 +5,8 @@ import com.mobileapps.walkbuddy.models.Route;
 import java.util.Comparator;
 
 /**
- * Created by kurti on 11/6/2017.
+ * Compares routes based on their route time.
  */
-
 public class RouteTimeComparator implements Comparator<Route> {
     @Override
     public int compare(Route route, Route t1) {

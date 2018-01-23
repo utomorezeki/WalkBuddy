@@ -20,7 +20,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pick a destination to record a route for:" />
+                android:text="@string/pick_a_dest" />
 
             <Button
                 android:id="@+id/pickPlace"
@@ -32,7 +32,7 @@
                 android:background="@drawable/pill_button_accent"
                 android:paddingLeft="8dp"
                 android:paddingRight="8dp"
-                android:text="Select Destination"
+                android:text="@string/select_destination"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
 
@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
-                android:text="Quickest routes:" />
+                android:text="@string/quick_route" />
         </LinearLayout>
 
         <LinearLayout
@@ -53,7 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/activity_horizontal_margin"
-                android:text="You do not have any routes saved."
+                android:text="@string/no_route_saved"
                 android:gravity="center"/>
 
             <ListView

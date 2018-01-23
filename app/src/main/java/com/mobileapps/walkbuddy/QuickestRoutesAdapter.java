@@ -15,7 +15,7 @@ import com.mobileapps.walkbuddy.walkbuddy.R;
 import java.util.List;
 
 /**
- * Created by kurti on 11/3/2017.
+ * Adapter for managing QuickestRoutes ListView.
  */
 
 public class QuickestRoutesAdapter extends BaseAdapter {

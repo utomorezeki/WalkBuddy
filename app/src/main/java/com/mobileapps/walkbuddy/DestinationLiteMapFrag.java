@@ -1,6 +1,8 @@
 package com.mobileapps.walkbuddy;
 
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -13,7 +15,6 @@ import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,7 +29,7 @@ import com.mobileapps.walkbuddy.walkbuddy.R;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
+public class DestinationLiteMapFrag extends Fragment implements OnMapReadyCallback {
     private static final String ARG_VERTICES_LAT = "verticesLat";
     private static final String ARG_VERTICES_LNG = "verticesLng";
     private static final String ARG_POI_LAT = "poi_lat";
@@ -43,12 +44,12 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
     private List<Double> poiLat;
     private List<Double> poiLng;
 
-    public DestinationMapFrag() {
+    public DestinationLiteMapFrag() {
         // Required empty public constructor
     }
 
-    public static DestinationMapFrag newInstance(ArrayList<Double> verticesLat, ArrayList<Double> verticesLng, ArrayList<Double> poiLat, ArrayList<Double> poiLng) {
-        DestinationMapFrag fragment = new DestinationMapFrag();
+    public static DestinationLiteMapFrag newInstance(ArrayList<Double> verticesLat, ArrayList<Double> verticesLng, ArrayList<Double> poiLat, ArrayList<Double> poiLng) {
+        DestinationLiteMapFrag fragment = new DestinationLiteMapFrag();
         Bundle args = new Bundle();
         args.putSerializable(ARG_VERTICES_LAT, verticesLat);
         args.putSerializable(ARG_VERTICES_LNG, verticesLng);
@@ -73,7 +74,7 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        mView = inflater.inflate(R.layout.fragment_destination_map, container, false);
+        mView = inflater.inflate(R.layout.fragment_destination_lite_map, container, false);
         return mView;
 
     }
@@ -116,13 +117,12 @@ public class DestinationMapFrag extends Fragment implements OnMapReadyCallback{
         }
 
         mGoogleMap.addMarker(new MarkerOptions().position(userData.get(userData.size() - 1)).title("Destination"));
-
         LatLngBounds.Builder asd = new LatLngBounds.Builder();
         asd.include(userData.get(userData.size() - 1));
         asd.include(userData.get(0));
         LatLngBounds scale = asd.build();
 
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(scale,600,800,50));
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(scale,50));
     }
 
     public ArrayList<LatLng> getUserRoute() {

@@ -7,15 +7,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.models.Route;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.List;
-import java.util.Locale;
 
 /**
- * Created by kurti on 11/3/2017.
+ * Adapter for managing the Route ListView.
  */
 
 public class RouteAdapter extends BaseAdapter {

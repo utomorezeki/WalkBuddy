@@ -14,7 +14,9 @@ public class Destination implements Serializable {
     private List<Route> routes;
     private String destinationName;
 
-    public Destination() {}
+    public Destination() {
+        // Empty constructor needed for firebase
+    }
 
     public Destination(List<Route> routes, String destinationName) {
         this.routes = routes;
@@ -22,6 +24,5 @@ public class Destination implements Serializable {
     }
 
     public List<Route> getRoutes() { return this.routes; }
-
     public String getDestinationName() { return this.destinationName; }
 }

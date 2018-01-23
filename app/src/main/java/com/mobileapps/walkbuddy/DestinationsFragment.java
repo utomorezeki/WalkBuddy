@@ -1,33 +1,31 @@
 package com.mobileapps.walkbuddy;
 
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.android.gms.vision.Frame;
 import com.mobileapps.walkbuddy.models.Destination;
 import com.mobileapps.walkbuddy.walkbuddy.R;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Fragment for viewing a user's destinations and accessing their routes.
+ */
 public class DestinationsFragment extends Fragment {
     private static final String ARG_DESTINATIONS = "destinations";
 
     private OnDestinationsFragmentInteractionListener mListener;
+
     private ListView mListView;
     private List<Destination> destinations;
     private DestinationAdapter adapter;
@@ -73,9 +71,6 @@ public class DestinationsFragment extends Fragment {
             mListView.setVisibility(View.GONE);
         }
 
-
-        //mListView.setLongClickable(true);
-
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -90,40 +85,6 @@ public class DestinationsFragment extends Fragment {
                 fragmentManager.beginTransaction().replace(R.id.mainContent, fragment).addToBackStack(null).commit();
             }
         });
-
-        // Long click for deletion. Will possibly implement later
-//        mListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-//            @Override
-//            public boolean onItemLongClick(final AdapterView<?> adapterView, View view, int position, long id) {
-//                final int selectedPosition = position;
-//                final Destination selectedDestination = destinations.get(selectedPosition);
-//
-//                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
-//
-//                alertDialogBuilder.setTitle("Delete Destination");
-//
-//                alertDialogBuilder
-//                        .setMessage("Are you sure you want to delete " + selectedDestination.getDestinationName() + " and all associated routes?")
-//                        .setCancelable(false)
-//                        .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-//                            @Override
-//                            public void onClick(DialogInterface dialogInterface, int i) {
-//                                mListener.deleteDestination(selectedDestination.getDestinationName());
-//                                destinations.remove(selectedPosition);
-//                                adapter.notifyDataSetChanged();
-//                            }
-//                        }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        dialogInterface.cancel();
-//                    }
-//                });
-//
-//                AlertDialog alertDialog = alertDialogBuilder.create();
-//                alertDialog.show();
-//                return true;
-//            }
-//        });
 
         return mFrameLayout;
     }
@@ -150,12 +111,7 @@ public class DestinationsFragment extends Fragment {
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnDestinationsFragmentInteractionListener {
-        void deleteDestination(String destinationName);
     }
 }

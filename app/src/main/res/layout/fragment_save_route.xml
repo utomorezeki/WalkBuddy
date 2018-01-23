@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.mobileapps.walkbuddy.walkbuddy.com.mobileapps.walkbuddy.SaveRouteFragment"
+    tools:context="com.mobileapps.walkbuddy.SaveRouteFragment"
     android:layout_gravity="center"
     android:background="@color/colorPrimaryDark"
     android:fitsSystemWindows="true">
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:padding="10dp"
-            android:text="Route completed"
+            android:text="@string/route_completed"
             android:textColor="@android:color/white"
             android:textSize="20dp" />
 
@@ -93,7 +93,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dip"
                 style="?android:attr/borderlessButtonStyle"
-                android:text="Cancel Route"
+                android:text="@string/cancel_route"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white" />
 
@@ -108,7 +108,7 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginStart="50dp"
                 android:background="@drawable/pill_button_accent_small"
-                android:text="Save Route"
+                android:text="@string/save_route"
                 android:textColor="@android:color/black"
                 android:textStyle="bold" />
         </RelativeLayout>
